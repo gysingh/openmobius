@@ -1,0 +1,20 @@
+Open Mobius, High level data processing framework for Hadoop.
+
+ This product is licensed under the Apache License,  Version 2.0, 
+ available at http://www.apache.org/licenses/LICENSE-2.0.
+  
+ This product contains portions derived from Apache hadoop which is 
+ licensed under the Apache License, Version 2.0, available at 
+ http://hadoop.apache.org.
+  
+ Copyright 2007 - 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ 
+ --------------------------------------------
+ Open Mobius Examples:
+ https://github.com/chichiu-at-ebaysf/openmobius/tree/master/core/src/test/java/com/ebay/erl/mobius/core
+ 
+ Open Mobius Javadoc:
+ https://github.com/chichiu-at-ebaysf/openmobius/tree/master/core/doc
+ 
+ Open Mobius User Manual:
+ https://github.com/chichiu-at-ebaysf/openmobius/wiki
