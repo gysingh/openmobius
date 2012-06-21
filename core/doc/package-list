@@ -1,0 +1,13 @@
+com.ebay.erl.mobius.core
+com.ebay.erl.mobius.core.builder
+com.ebay.erl.mobius.core.collection
+com.ebay.erl.mobius.core.criterion
+com.ebay.erl.mobius.core.datajoin
+com.ebay.erl.mobius.core.fs
+com.ebay.erl.mobius.core.function
+com.ebay.erl.mobius.core.function.base
+com.ebay.erl.mobius.core.mapred
+com.ebay.erl.mobius.core.model
+com.ebay.erl.mobius.core.sort
+com.ebay.erl.mobius.util
+org.apache.hadoop.mapred.lib

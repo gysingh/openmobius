@@ -1,0 +1,53 @@
+<class-diagram version="1.0.7" icons="true" automaticImage="PNG" always-add-relationships="false" generalizations="true" 
+  realizations="true" associations="true" dependencies="false" nesting-relationships="true">  
+  <class id="1" corner="BOTTOM_RIGHT" language="java" name="com.ebay.erl.mobius.core.function.base.Projectable" 
+    project="core" file="/core/src/main/java/com/ebay/erl/mobius/core/function/base/Projectable.java" binary="false">    
+    <position height="-1" width="-1" x="324" y="154"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="2" corner="BOTTOM_RIGHT" language="java" name="com.ebay.erl.mobius.core.function.base.AggregateFunction" 
+    project="core" file="/core/src/main/java/com/ebay/erl/mobius/core/function/base/AggregateFunction.java" 
+    binary="false">    
+    <position height="-1" width="-1" x="436" y="350"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="3" corner="BOTTOM_RIGHT" language="java" name="com.ebay.erl.mobius.core.function.base.ExtendFunction" 
+    project="core" file="/core/src/main/java/com/ebay/erl/mobius/core/function/base/ExtendFunction.java" binary="false">    
+    <position height="-1" width="-1" x="217" y="257"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <class id="4" corner="BOTTOM_RIGHT" language="java" name="com.ebay.erl.mobius.core.function.base.GroupFunction" 
+    project="core" file="/core/src/main/java/com/ebay/erl/mobius/core/function/base/GroupFunction.java" binary="false">    
+    <position height="-1" width="-1" x="435" y="257"/>    
+    <display autosize="true" package="true" initial-value="false" signature="true" visibility="true">      
+      <attributes public="false" package="false" protected="false" private="false"/>      
+      <operations public="false" package="false" protected="false" private="false"/>    
+    </display>  
+  </class>  
+  <generalization id="5">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <generalization id="6">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </generalization>  
+  <generalization id="7">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </generalization>  
+  <classifier-display autosize="true" package="true" initial-value="false" signature="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
