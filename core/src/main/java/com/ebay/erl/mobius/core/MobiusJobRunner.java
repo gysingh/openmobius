@@ -2,7 +2,6 @@ package com.ebay.erl.mobius.core;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -62,7 +61,7 @@ import com.ebay.erl.mobius.util.JVMShutdownNotifier;
  * licensed under the Apache License, Version 2.0, available at 
  * http://hadoop.apache.org.
  * 
- * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ * Â© 2007 â€“ 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
  */
 @SuppressWarnings("deprecation")
 public class MobiusJobRunner extends ToolRunner

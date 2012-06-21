@@ -33,26 +33,12 @@ import com.ebay.erl.mobius.core.collection.CaseInsensitiveTreeMap;
  * licensed under the Apache License, Version 2.0, available at 
  * http://hadoop.apache.org.
  * 
- * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ * Â© 2007 â€“ 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
  *
  */
 public class TupleTest 
 {
 	private static final Log LOGGER = LogFactory.getLog(TupleTest.class);
-	
-	public static void main(String[] arg)
-	{
-		/*
-		String s = "RanDom StrIng";
-		long start = System.currentTimeMillis();
-		for( int i=0;i<Integer.MAX_VALUE/4;i++){
-			s.toLowerCase();
-		}
-		long end = System.currentTimeMillis();
-		
-		System.out.println(end-start);
-		*/
-	}
 	
 	@Test
 	public void test_comparator()

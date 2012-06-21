@@ -19,8 +19,20 @@ import org.apache.hadoop.util.ReflectionUtils;
 import com.ebay.erl.mobius.core.model.Tuple;
 
 /**
- * Majority of the codes are copied from org.apache.hadoop.mapred.lib.TotalOrderPartitioner
+ * Majority of the codes are copied from 
+ * org.apache.hadoop.mapred.lib.TotalOrderPartitioner.
+ * 
+ * <p>
+ * This product is licensed under the Apache License,  Version 2.0, 
+ * available at http://www.apache.org/licenses/LICENSE-2.0.
+ * 
+ * This product contains portions derived from Apache hadoop which is 
+ * licensed under the Apache License, Version 2.0, available at 
+ * http://hadoop.apache.org.
+ * 
+ * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
  */
+@SuppressWarnings({ "deprecation", "unchecked" })
 public class EvenlyPartitioner<K extends WritableComparable,V>
 		implements Partitioner<K,V> {
 

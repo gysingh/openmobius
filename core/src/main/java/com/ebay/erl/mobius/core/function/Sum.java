@@ -6,6 +6,32 @@ import com.ebay.erl.mobius.core.function.base.SingleInputAggregateFunction;
 import com.ebay.erl.mobius.core.model.Column;
 import com.ebay.erl.mobius.core.model.Tuple;
 
+/**
+ * Compute the sum of the given {@link Column}, specified in
+ * the constructor, of a {@link Dataset}.<p>
+ * 
+ * The value of the specified column needs to be in the following
+ * types:
+ * <ul>
+ * <li> {@link Tuple#isNumericalType(byte)} return true </li>
+ * <li> {@link Tuple#STRING_TYPE} and can be converted into double using
+ * {@link Double#parseDouble(String)}</li>
+ * </ul> 
+ * 
+ * {@link IllegalArgumentException} is thrown for all other type.
+ * 
+ * 
+ * <p>
+ * This product is licensed under the Apache License,  Version 2.0, 
+ * available at http://www.apache.org/licenses/LICENSE-2.0.
+ * 
+ * This product contains portions derived from Apache hadoop which is 
+ * licensed under the Apache License, Version 2.0, available at 
+ * http://hadoop.apache.org.
+ * 
+ * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ *
+ */
 public class Sum extends SingleInputAggregateFunction 
 {
 		

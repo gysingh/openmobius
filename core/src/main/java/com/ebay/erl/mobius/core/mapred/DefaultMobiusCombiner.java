@@ -25,6 +25,22 @@ import com.ebay.erl.mobius.core.model.Tuple;
 import com.ebay.erl.mobius.util.SerializableUtil;
 import com.ebay.erl.mobius.util.Util;
 
+/**
+ * Default combiner for join or group-by job if
+ * all the projectable columns are combinable,
+ * determined by {@link Projectable#isCombinable()}.
+ * 
+ * 
+ * <p>
+ * This product is licensed under the Apache License,  Version 2.0, 
+ * available at http://www.apache.org/licenses/LICENSE-2.0.
+ * 
+ * This product contains portions derived from Apache hadoop which is 
+ * licensed under the Apache License, Version 2.0, available at 
+ * http://hadoop.apache.org.
+ * 
+ * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ */
 @SuppressWarnings("deprecation")
 public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoinKey, DataJoinValue>
 {

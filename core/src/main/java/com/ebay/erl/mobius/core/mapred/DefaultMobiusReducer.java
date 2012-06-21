@@ -46,7 +46,7 @@ import com.ebay.erl.mobius.util.Util;
  * licensed under the Apache License, Version 2.0, available at 
  * http://hadoop.apache.org.
  * 
- * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ * Â© 2007 â€“ 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
  */
 @SuppressWarnings({"deprecation", "unchecked"})
 public class DefaultMobiusReducer extends DataJoinReducer<Tuple, Tuple, NullWritable, WritableComparable<?>>
