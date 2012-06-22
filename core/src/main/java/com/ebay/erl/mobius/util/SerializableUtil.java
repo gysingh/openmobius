@@ -39,14 +39,7 @@ public class SerializableUtil
 	
 	public final static String serializeToBase64(Serializable obj)
 		throws IOException
-	{
-		if( obj instanceof String )
-		{
-			boolean isBase64 = Base64.isArrayByteBase64(((String)obj).getBytes("UTF-8"));
-			if( isBase64 )
-				return (String)obj;
-		}
-		
+	{	
 		ByteArrayOutputStream bos	= new ByteArrayOutputStream ();
 		ObjectOutputStream oos		= null;
 		try
