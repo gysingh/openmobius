@@ -379,6 +379,7 @@ public class BigTupleList implements NotificationListener, Observer, Iterable<Tu
 		}
 		
 		LOGGER.debug(Thread.currentThread().getName()+" BID["+this._ID+"] All tuples removed.");
+		this.firstTuple = null;
 		this.totalTuples.set(0L);
 	}
 	

@@ -157,9 +157,11 @@ public abstract class MobiusJob extends Configured implements Tool, Serializable
 	public Dataset list(Dataset dataset, Path outputFolder, Class<? extends FileOutputFormat> outputFormat, Column... columns)
 		throws IOException
 	{	
-		JobConf job = dataset.createJobConf(0);
+		byte datasetID = 0;// set to 0 as there is only one dataset to be operated.
 		
-		job.set("mapred.job.name", dataset.getDatasetID(0));
+		JobConf job = dataset.createJobConf(datasetID);
+		
+		job.set("mapred.job.name", "Listing "+dataset.getName());
 		job.setJarByClass(this.getClass());
 		job.setNumReduceTasks(0); // list is map only job
 		job.setOutputKeyClass(NullWritable.class);
@@ -167,8 +169,8 @@ public abstract class MobiusJob extends Configured implements Tool, Serializable
 		job.setJobName("List "+dataset.getName());
 		
 		JobSetup.validateColumns(dataset, columns);
-		JobSetup.setupInputs(job, dataset, 0);
-		JobSetup.setupProjections(job, dataset, 0, columns);		
+		JobSetup.setupInputs(job, dataset, datasetID);
+		JobSetup.setupProjections(job, dataset, datasetID, columns);		
 		JobSetup.setupOutputs(job, outputFolder, outputFormat);
 		
 		this.addToExecQueue(job);
@@ -299,8 +301,7 @@ public abstract class MobiusJob extends Configured implements Tool, Serializable
 		throws IOException
 	{
 		Configuration conf = this.getConf();
-		conf.setBoolean(ConfigureConstants.IS_OUTER_JOIN, true);
-		
+		conf.setBoolean(ConfigureConstants.IS_OUTER_JOIN, true);		
 		return new JoinOnConfigure(nullReplacement, conf, left, right);
 	}
 	

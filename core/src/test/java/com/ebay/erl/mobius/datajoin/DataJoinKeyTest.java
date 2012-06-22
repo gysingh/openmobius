@@ -30,23 +30,23 @@ public class DataJoinKeyTest {
 
 	@Test
 	public void testConstructor() {
-		DataJoinKey djKey = new DataJoinKey("1", new Text("test value"));
+		DataJoinKey djKey = new DataJoinKey(Byte.valueOf("1"), new Text("test value"));
 		
 		Assert.assertEquals("1", djKey.getDatasetID());
 		Assert.assertEquals(new Text("test value"), djKey.getKey());
 		//Assert.assertEquals(null, djKey.getSortKeyword());
 		//Assert.assertEquals(Class.class, djKey.getSortComparator());
 		
-		djKey = new DataJoinKey(new Text("1"), new Text("test value"), new Text("2"), DataJoinKey.Comparator.class);
+		djKey = new DataJoinKey(Byte.valueOf("1"), new Text("test value"), new Text("2"), DataJoinKey.Comparator.class);
 		
 		Assert.assertEquals("1", djKey.getDatasetID());
 		Assert.assertEquals(new Text("test value"), djKey.getKey());
 		//Assert.assertEquals(new Text("2"), djKey.getSortKeyword());
 		//Assert.assertEquals(DataJoinKey.Comparator.class, djKey.getSortComparator());
 		
-		djKey = new DataJoinKey(new Text("1"), new Text("test value"), new Text("2"), null);
+		djKey = new DataJoinKey(Byte.valueOf("1"), new Text("test value"), new Text("2"), null);
 		
-		Assert.assertEquals("1", djKey.getDatasetID());
+		Assert.assertEquals(Byte.valueOf("1"), djKey.getDatasetID());
 		Assert.assertEquals(new Text("test value"), djKey.getKey());
 		//Assert.assertEquals(new Text("2"), djKey.getSortKeyword());
 		//Assert.assertEquals(Class.class, djKey.getSortComparator());
@@ -55,9 +55,9 @@ public class DataJoinKeyTest {
 	
 	@Test
 	public void testCompare() {
-		DataJoinKey djKey1 = new DataJoinKey("1", new Text("1"));
-		DataJoinKey djKey1_1 = new DataJoinKey("1", new Text("1"));
-		DataJoinKey djKey2 = new DataJoinKey("1", new Text("2"));
+		DataJoinKey djKey1 = new DataJoinKey(Byte.valueOf("1"), new Text("1"));
+		DataJoinKey djKey1_1 = new DataJoinKey(Byte.valueOf("1"), new Text("1"));
+		DataJoinKey djKey2 = new DataJoinKey(Byte.valueOf("1"), new Text("2"));
 		
 		Assert.assertEquals(-1, djKey1.compareTo(djKey2));
 		Assert.assertEquals(1, djKey2.compareTo(djKey1));
@@ -67,9 +67,9 @@ public class DataJoinKeyTest {
 		Assert.assertEquals(1, djKey1.compare(djKey2, djKey1));
 		Assert.assertEquals(0, djKey1.compare(djKey1, djKey1_1));
 		
-		djKey1 = new DataJoinKey(new Text("1"), new Text("1"), new Text("1"), null);
-		djKey1_1 = new DataJoinKey(new Text("1"), new Text("1"), new Text("2"), null);
-		djKey2 = new DataJoinKey(new Text("1"), new Text("2"), new Text("1"), null);
+		djKey1		= new DataJoinKey(Byte.valueOf("1"), new Text("1"), new Text("1"), null);
+		djKey1_1 	= new DataJoinKey(Byte.valueOf("1"), new Text("1"), new Text("2"), null);
+		djKey2 		= new DataJoinKey(Byte.valueOf("1"), new Text("2"), new Text("1"), null);
 		
 		Assert.assertEquals(-1, djKey1.compareTo(djKey2));
 		Assert.assertEquals(1, djKey2.compareTo(djKey1));
@@ -81,9 +81,9 @@ public class DataJoinKeyTest {
 		Assert.assertEquals(0, djKey1.compare(djKey1, djKey1_1));
 		Assert.assertEquals(0, djKey1.compare(djKey1_1, djKey1));
 		
-		djKey1 = new DataJoinKey(new Text("1"), new Text("1"), new Text("1"), NegativeComparator.class);
-		djKey1_1 = new DataJoinKey(new Text("1"), new Text("1"), new Text("2"), NegativeComparator.class);
-		djKey2 = new DataJoinKey(new Text("1"), new Text("2"), new Text("1"), NegativeComparator.class);
+		djKey1 		= new DataJoinKey(Byte.valueOf("1"), new Text("1"), new Text("1"), NegativeComparator.class);
+		djKey1_1 	= new DataJoinKey(Byte.valueOf("1"), new Text("1"), new Text("2"), NegativeComparator.class);
+		djKey2 		= new DataJoinKey(Byte.valueOf("1"), new Text("2"), new Text("1"), NegativeComparator.class);
 		
 		Assert.assertEquals(-1, djKey1.compareTo(djKey2));
 		Assert.assertEquals(1, djKey2.compareTo(djKey1));
@@ -98,9 +98,9 @@ public class DataJoinKeyTest {
 	
 	@Test
 	public void testHash() {
-		DataJoinKey djKey1 = new DataJoinKey("1", new Text("1"));
-		DataJoinKey djKey1_1 = new DataJoinKey("1", new Text("1"));
-		DataJoinKey djKey2 = new DataJoinKey("1", new Text("2"));
+		DataJoinKey djKey1 		= new DataJoinKey(Byte.valueOf("1"), new Text("1"));
+		DataJoinKey djKey1_1 	= new DataJoinKey(Byte.valueOf("1"), new Text("1"));
+		DataJoinKey djKey2 		= new DataJoinKey(Byte.valueOf("1"), new Text("2"));
 		
 		Assert.assertEquals(djKey1.hashCode(), djKey1_1.hashCode());
 		Assert.assertNotSame(djKey1.hashCode(), djKey2.hashCode());
@@ -116,8 +116,8 @@ public class DataJoinKeyTest {
 		Tuple t2 = new Tuple();
 		t2.put("k2", "v2");
 		
-		DataJoinKey k1 = new DataJoinKey("1", t1);
-		DataJoinKey k2 = new DataJoinKey("1", t2);
+		DataJoinKey k1 = new DataJoinKey(Byte.valueOf("1"), t1);
+		DataJoinKey k2 = new DataJoinKey(Byte.valueOf("1"), t2);
 		
 		ByteArrayOutputStream b1 = new ByteArrayOutputStream();
 		ByteArrayOutputStream b2 = new ByteArrayOutputStream();

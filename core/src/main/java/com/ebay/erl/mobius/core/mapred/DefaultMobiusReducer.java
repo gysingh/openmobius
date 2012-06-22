@@ -52,7 +52,7 @@ import com.ebay.erl.mobius.util.Util;
 public class DefaultMobiusReducer extends DataJoinReducer<Tuple, Tuple, NullWritable, WritableComparable<?>>
 {
 	
-private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
+	private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	
 	
 	
@@ -64,20 +64,20 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * current dataset is the expected one, if not, then we cannot
 	 * perform inner join.
 	 */
-	private String[] _allDatasetIDs;
+	private Byte[] _allDatasetIDs;
 	
 	/**
 	 * array store all the dataset IDs but not the last
 	 * one
 	 */
-	private String[] _allButNotLastDatasetIDs;
+	private Byte[] _allButNotLastDatasetIDs;
 	
 	
 	
 	/**
 	 * A quick reference to get the last dataset ID.
 	 */
-	private String _lastDatasetID;
+	private Byte _lastDatasetID;
 	
 	
 	
@@ -149,7 +149,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * mapping from a datasetID to a list of group functions that
 	 * require columns only from that datasetID.
 	 */
-	protected Map<String, List<GroupFunction>> singleDatasetGroupFunction	= new HashMap<String, List<GroupFunction>>();
+	protected Map<Byte, List<GroupFunction>> singleDatasetGroupFunction	= new HashMap<Byte, List<GroupFunction>>();
 	
 	
 	
@@ -157,7 +157,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * mapping from a datasetID to a list of extend functions that
 	 * require columns only from that datasetID.
 	 */
-	protected Map<String, List<ExtendFunction>> singleDatasetExtendFunction = new HashMap<String, List<ExtendFunction>>();
+	protected Map<Byte, List<ExtendFunction>> singleDatasetExtendFunction = new HashMap<Byte, List<ExtendFunction>>();
 	
 	
 	
@@ -165,22 +165,22 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * mapping from a datasetID to the result of its extend functions
 	 * that require only the columns from the dataset.
 	 */
-	protected Map<String, BigTupleList> singleDatasetExtendFunResult = new HashMap<String, BigTupleList>();
+	protected Map<Byte, BigTupleList> singleDatasetExtendFunResult = new HashMap<Byte, BigTupleList>();
 	
 	
 	
 	/**
 	 *  only used when <code>requirePreCrossProduct</code> is true.
 	 */
-	protected Map<String, BigTupleList> valuesForAllDatasets = new HashMap<String, BigTupleList>();
+	protected Map<Byte, BigTupleList> valuesForAllDatasets = new HashMap<Byte, BigTupleList>();
 	
 	
 	
 	/**
 	 * A mapping to remember the schema of each dataset.
 	 */
-	private Map<String/*dataset ID*/, String[]/* schema belongs to the dataset*/> datasetToSchemaMapping 
-		= new HashMap<String, String[]>();
+	private Map<Byte/*dataset ID*/, String[]/* schema belongs to the dataset*/> datasetToSchemaMapping 
+		= new HashMap<Byte, String[]>();
 		
 
 
@@ -202,7 +202,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * require the join key, the engine will not compute
 	 * it per values.
 	 */
-	private Map<String, Boolean> onlyHasGroupKeyExtendFunctions = new HashMap<String, Boolean>();
+	private Map<Byte, Boolean> onlyHasGroupKeyExtendFunctions = new HashMap<Byte, Boolean>();
 	
 	@Override
 	public void configure(JobConf conf)
@@ -230,7 +230,12 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 		////////////////////////////////////////
 		// setup <code>_allDatasetIDs</code>
 		////////////////////////////////////////
-		this._allDatasetIDs = this.conf.getStrings(ConfigureConstants.ALL_DATASET_IDS, Util.ZERO_SIZE_STRING_ARRAY);
+		String[] allDSIDs = this.conf.getStrings(ConfigureConstants.ALL_DATASET_IDS, Util.ZERO_SIZE_STRING_ARRAY);
+		this._allDatasetIDs = new Byte[allDSIDs.length];
+		for( int i=0;i<allDSIDs.length;i++ )
+		{
+			this._allDatasetIDs[i] = Byte.valueOf(allDSIDs[i]);
+		}
 		if( this._allDatasetIDs.length==0 )
 			throw new IllegalStateException(ConfigureConstants.ALL_DATASET_IDS+" is not set.");
 		
@@ -241,7 +246,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 		////////////////////////////////////////
 		this._lastDatasetID = this._allDatasetIDs[this._allDatasetIDs.length-1];
 		
-		this._allButNotLastDatasetIDs = new String[this._allDatasetIDs.length-1];
+		this._allButNotLastDatasetIDs = new Byte[this._allDatasetIDs.length-1];
 		for( int i=0;i<this._allDatasetIDs.length-1;i++ )
 			this._allButNotLastDatasetIDs[i] = this._allDatasetIDs[i];
 		
@@ -308,7 +313,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 				
 				boolean onlyUseGroupKey = true;
 				
-				String datasetID = this.getDatasetID(func.getParticipatedDataset().toArray(new Dataset[0])[0]);
+				Byte datasetID = func.getParticipatedDataset().toArray(new Dataset[0])[0].getID();
 				if( func instanceof GroupFunction )
 				{
 					List<GroupFunction> funcs = null;
@@ -378,6 +383,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	public void joinreduce(Tuple key, DataJoinValueGroup<Tuple> values, OutputCollector<NullWritable, WritableComparable<?>> output, Reporter reporter) 
 		throws IOException 
 	{	
+		
 		// set reporter for all projectable
 		if( !reporterSet )
 		{			
@@ -404,7 +410,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 		//////////////////////////////////////////
 		while( values.hasNext() )
 		{
-			String datasetID = values.nextDatasetID ();		
+			Byte datasetID = values.nextDatasetID ();		
 			
 			if ( !datasetID.equals (_allDatasetIDs[expectingDatasetIDX]) )
 			{
@@ -557,7 +563,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 			while( valuesFromLastDataset.hasNext() )
 			{
 				Tuple aRow = valuesFromLastDataset.next();
-				aRow.setSchema(this.getSchemaByDatasetID(_lastDatasetID));
+				aRow.setSchema(this.getSchemaByDatasetID(_lastDatasetID));				
 				if(hasNoGroupFunctionForLastDS)
 				{
 					// there is no group function from the last DS, we can
@@ -613,7 +619,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	/**
 	 * compute functions that require columns from the datasetID only.
 	 */
-	private void computeSingleDSFunctionsResults(Iterator<Tuple> tuples, String datasetID, Reporter reporter)
+	private void computeSingleDSFunctionsResults(Iterator<Tuple> tuples, Byte datasetID, Reporter reporter)
 	{
 		while( tuples.hasNext() )
 		{
@@ -657,7 +663,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	}
 	
 	
-	private void rememberTuple(String datasetID, Tuple aTuple, Reporter reporter){
+	private void rememberTuple(Byte datasetID, Tuple aTuple, Reporter reporter){
 		BigTupleList tuples = null;
 		if( (tuples=this.valuesForAllDatasets.get(datasetID))==null )
 		{
@@ -673,7 +679,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * <code>aRow</code> as the input and save the result for final
 	 * cross-product.
 	 */
-	private void processExtendFunctions(String datasetID, Tuple aRow, Reporter reporter)
+	private void processExtendFunctions(Byte datasetID, Tuple aRow, Reporter reporter)
 	{
 		// process extend function for this current dataset and save the result
 		List<ExtendFunction> extendFunctions	= this.singleDatasetExtendFunction.get(datasetID);
@@ -723,7 +729,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	 * call their consume method with the <code>aRow</code>
 	 * as the input.
 	 */
-	private void computeGroupFunctions(String datasetID, Tuple aRow)
+	private void computeGroupFunctions(Byte datasetID, Tuple aRow)
 	{
 		List<GroupFunction> groupFunctions = this.singleDatasetGroupFunction.get(datasetID);
 		this.computeGroupFunctions(aRow, groupFunctions);
@@ -737,26 +743,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 					aFunction.consume(aRow);
 			}
 		}
-	}
-
-	
-	private String getDatasetID(Dataset ds){		
-		// use the ds#getName() to match its ID in the
-		// <code>_allDatasetIDs</code> array.
-		String key = null;
-		for(String aDatasetID:this._allDatasetIDs)
-		{
-			String name = aDatasetID.substring(aDatasetID.indexOf("_")+1);// remove sn prefix
-			if( name.equalsIgnoreCase(ds.getName()) )
-			{
-				key = aDatasetID;
-				break;
-			}
-		}
-		if( key==null )
-			throw new IllegalArgumentException("Cannot find the ID for Dataset:"+ds);
-		return key;
-	}
+	}	
 	
 	
 	private void clearPreviousResults()
@@ -771,14 +758,14 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 				((GroupFunction)fun).reset();
 			}
 		}
-		for( String aDataset:this.valuesForAllDatasets.keySet() )
+		for( Byte aDatasetID:this.valuesForAllDatasets.keySet() )
 		{
-			this.valuesForAllDatasets.remove(aDataset).clear();
+			this.valuesForAllDatasets.remove(aDatasetID).clear();
 		}
 		
 	}
 	
-	protected String[] getSchemaByDatasetID(String datasetID)
+	protected String[] getSchemaByDatasetID(Byte datasetID)
 	{
 		String[] schema = null;
 		if( (schema=this.datasetToSchemaMapping.get(datasetID))==null )
@@ -800,7 +787,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 	/**
 	 * compute the cross product result of the given dataset id
 	 */
-	private Iterable<Tuple> crossProduct(Reporter reporter, boolean usingNull, String... datasetIDs)
+	private Iterable<Tuple> crossProduct(Reporter reporter, boolean usingNull, Byte... datasetIDs)
 		throws IOException
 	{
 		
@@ -808,7 +795,7 @@ private static final Log LOGGER = LogFactory.getLog(DefaultMobiusReducer.class);
 			return null;
 		
 		List<BigTupleList> resultsToBeCrossProducts = new ArrayList<BigTupleList>();
-		for( String datasetID:datasetIDs )
+		for( Byte datasetID:datasetIDs )
 		{
 			if( this.singleDatasetExtendFunResult.get(datasetID)!=null )
 			{

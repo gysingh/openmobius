@@ -77,13 +77,15 @@ public class GroupByConfigure
 		// dataset or not.
 		JobSetup.validateColumns(this.dataset, projections);
 		
+		Byte datasetID = 0;
+		
 		// validation complete, set the key column
-		Configuration aJobConf		= this.dataset.createJobConf(0);
+		Configuration aJobConf		= this.dataset.createJobConf(datasetID);		
 		this.jobConf				= Util.merge(this.jobConf, aJobConf);
 		this.jobConf.set("mapred.job.name", "Group "+this.dataset.getName()+" by "+Arrays.toString(columns));
 		this.jobConf.set(ConfigureConstants.MAPPER_CLASS, this.dataset.getMapper().getCanonicalName());
 		
-		String joinKeyPropertyName	= this.dataset.getDatasetID(0)+".key.columns";
+		String joinKeyPropertyName	= datasetID+".key.columns";
 		
 		for( Column aColumn:projections )
 		{

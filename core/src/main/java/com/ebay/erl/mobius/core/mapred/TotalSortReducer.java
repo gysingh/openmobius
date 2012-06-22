@@ -49,7 +49,7 @@ public class TotalSortReducer extends DefaultMobiusReducer
 	{	
 		if( values.hasNext() )
 		{
-			String datasetID = values.nextDatasetID ();
+			Byte datasetID = values.nextDatasetID ();
 			Iterator<Tuple> valuesToBeOutput = values.next();
 			while( valuesToBeOutput.hasNext() )
 			{

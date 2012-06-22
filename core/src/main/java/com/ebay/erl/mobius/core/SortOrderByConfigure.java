@@ -83,7 +83,7 @@ public class SortOrderByConfigure
 		
 		// set the columns to be emitted as key for this sort job.  These
 		// columns are the one used in the <code>Sorters</code>
-		String outputKey = this.aDataset.getDatasetID(0)+".key.columns";		
+		String outputKey = this.aDataset.getID()+".key.columns";		
 		StringBuffer columns = new StringBuffer();
 		for( int i=0;i<sorters.length;i++ )
 		{

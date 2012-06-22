@@ -23,7 +23,7 @@ public class DataJoinValueTest {
 
 	@Test
 	public void testConstructor() {
-		DataJoinValue djvalue = new DataJoinValue("1", new Text("2"));
+		DataJoinValue djvalue = new DataJoinValue(Byte.valueOf("1"), new Text("2"));
 		
 		Assert.assertEquals("1", djvalue.getDatasetID());
 		Assert.assertEquals(new Text("2"), djvalue.getValue());
@@ -32,9 +32,9 @@ public class DataJoinValueTest {
 	
 	@Test
 	public void testCompare() {
-		DataJoinValue djvalue1 = new DataJoinValue("1", new Text("1"));
-		DataJoinValue djvalue1_1 = new DataJoinValue("1", new Text("1"));
-		DataJoinValue djvalue2 = new DataJoinValue("1", new Text("2"));
+		DataJoinValue djvalue1 		= new DataJoinValue(Byte.valueOf("1"), new Text("1"));
+		DataJoinValue djvalue1_1 	= new DataJoinValue(Byte.valueOf("1"), new Text("1"));
+		DataJoinValue djvalue2 		= new DataJoinValue(Byte.valueOf("1"), new Text("2"));
 		
 		Assert.assertEquals(-1, djvalue1.compareTo(djvalue2));
 		Assert.assertEquals(1, djvalue2.compareTo(djvalue1));

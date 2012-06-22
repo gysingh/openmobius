@@ -3,7 +3,6 @@ package com.ebay.erl.mobius.core.datajoin;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapred.OutputCollector;
 
@@ -21,7 +20,7 @@ import org.apache.hadoop.mapred.OutputCollector;
  * @param <OK>
  * @param <OV>
  */
-public class DataJoinOutputCollector<OK extends WritableComparable, OV extends WritableComparable> 
+public class DataJoinOutputCollector<OK extends WritableComparable<?>, OV extends WritableComparable<?>> 
 		implements OutputCollector<OK, OV>{
 
 	private DataJoinMapper mapper;
@@ -38,10 +37,10 @@ public class DataJoinOutputCollector<OK extends WritableComparable, OV extends W
 	@Override
 	public void collect(OK key, OV value) throws IOException 
 	{
-		DataJoinKey nkey = new DataJoinKey(new Text(this.mapper.getDatasetID()), key, this.mapper.extractSortValueKeyword(value), this.mapper.getSortValueComparator());
+		DataJoinKey nkey = new DataJoinKey(this.mapper.getDatasetID(), key, this.mapper.extractSortValueKeyword(value), this.mapper.getSortValueComparator());
 		nkey.setConf(this.conf);
 		
-		DataJoinValue nvalue = new DataJoinValue(new Text(this.mapper.getDatasetID()), value);
+		DataJoinValue nvalue = new DataJoinValue(this.mapper.getDatasetID(), value);
 		nvalue.setConf(this.conf);
 		
 		output.collect(nkey, nvalue);

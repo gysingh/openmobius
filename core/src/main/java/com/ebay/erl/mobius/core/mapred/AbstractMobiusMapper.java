@@ -3,8 +3,10 @@ package com.ebay.erl.mobius.core.mapred;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.IllegalFormatException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -87,7 +89,7 @@ public abstract class AbstractMobiusMapper<IK, IV> extends DataJoinMapper<IK, IV
 	/**
 	 * The current dataset ID.
 	 */
-	protected String currentDatasetID = null;
+	protected Byte currentDatasetID = null;
 	
 	
 	/**
@@ -169,7 +171,28 @@ public abstract class AbstractMobiusMapper<IK, IV> extends DataJoinMapper<IK, IV
 		
 		// catch the current dataset ID, the {@link Configuration#get(String)}
 		// is costly as it compose Pattern every time. 
-		this.currentDatasetID = this.conf.get (ConfigureConstants.CURRENT_DATASET_ID);
+		this.currentDatasetID = Byte.valueOf(this.conf.get (ConfigureConstants.CURRENT_DATASET_ID));
+		
+		String[] datasetIDstoNames = this.conf.getStrings(ConfigureConstants.DATASET_ID_TO_NAME_MAPPING);
+		Map<Byte, String> mapping = new HashMap<Byte, String>();
+		for( String aMapping:datasetIDstoNames )
+		{
+			int cut = aMapping.indexOf(";");
+			Byte datasetID = Byte.parseByte(aMapping.substring(0, cut));
+			String datasetDisplayName = aMapping.substring(cut+1);
+			
+			mapping.put(datasetID, datasetDisplayName);
+		}
+		if( mapping.size()==0 )
+			throw new IllegalArgumentException(ConfigureConstants.DATASET_ID_TO_NAME_MAPPING+" is not set.");
+		
+		this.dataset_display_id = mapping.get(this.currentDatasetID);
+		if( this.dataset_display_id==null )
+		{
+			throw new IllegalArgumentException("Cannot find display name for datasetID:"+this.currentDatasetID +
+					" from "+ConfigureConstants.DATASET_ID_TO_NAME_MAPPING+":"+
+					this.conf.get(ConfigureConstants.DATASET_ID_TO_NAME_MAPPING));
+		}
 		
 		
 		 // initialize counters
@@ -177,8 +200,6 @@ public abstract class AbstractMobiusMapper<IK, IV> extends DataJoinMapper<IK, IV
 		this._COUNTER_OUTPUT_RECORD				= 0L;
 		this._COUNTER_FILTERED_RECORD			= 0L;
 		this._COUNTER_INVALIDATE_FORMAT_RECORD 	= 0L;
-		
-		this.dataset_display_id = this.getDatasetID().substring(this.getDatasetID().indexOf("_")+1);
 		
 		try
 		{
@@ -345,7 +366,7 @@ public abstract class AbstractMobiusMapper<IK, IV> extends DataJoinMapper<IK, IV
 				// is no key
 				throw new IllegalArgumentException("key for dataset: "+this.getDatasetID()+
 						" cannot be empty when performing join/group by.");
-			}
+			}			
 			output.collect(key, value);
 		}
 	}
@@ -379,7 +400,7 @@ public abstract class AbstractMobiusMapper<IK, IV> extends DataJoinMapper<IK, IV
 	/**
 	 * Get the current dataset ID.
 	 */
-	public final String getDatasetID()
+	public final Byte getDatasetID()
 	{
 		return this.currentDatasetID;	
 	}

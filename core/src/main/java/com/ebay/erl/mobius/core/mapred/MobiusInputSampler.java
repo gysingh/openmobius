@@ -146,7 +146,7 @@ public class MobiusInputSampler implements Sampler {
 				job.set (ConfigureConstants.CURRENT_DATASET_ID, job.get(ConfigureConstants.ALL_DATASET_IDS));
 			}
 			
-			Text datasetID = new Text(job.get(ConfigureConstants.CURRENT_DATASET_ID));	
+			Byte datasetID = Byte.valueOf(job.get(ConfigureConstants.CURRENT_DATASET_ID));	
 			LOGGER.info("Samples coming from dataset: "+datasetID.toString());
 			AbstractMobiusMapper mapper = this.getMapper(inf, splits[i], job);
 			mapper.configure(job);
@@ -212,7 +212,7 @@ public class MobiusInputSampler implements Sampler {
 	}
 	
 	
-	private DataJoinKey getKey(Tuple tuple, Sorter[] sorter, Text datasetID, AbstractMobiusMapper mapper, Configuration conf)
+	private DataJoinKey getKey(Tuple tuple, Sorter[] sorter, Byte datasetID, AbstractMobiusMapper mapper, Configuration conf)
 	{
 		Tuple columnsUsedToSort = new Tuple();
 		for(Sorter aSorter:sorter )

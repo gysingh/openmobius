@@ -2,7 +2,6 @@ package com.ebay.erl.mobius.core.builder;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -18,6 +17,7 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.SequenceFileOutputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
 
+import com.ebay.erl.mobius.core.ConfigureConstants;
 import com.ebay.erl.mobius.core.MobiusJob;
 import com.ebay.erl.mobius.core.criterion.LogicalExpression;
 import com.ebay.erl.mobius.core.criterion.TupleCriterion;
@@ -63,8 +63,6 @@ import com.ebay.erl.mobius.util.SerializableUtil;
 @SuppressWarnings({ "unchecked", "deprecation" })
 public class Dataset implements Serializable
 {	
-	private static final DecimalFormat _TWO_DIGITS = new DecimalFormat("00");
-	
 	private static final long serialVersionUID = 9154263294942025327L;
 	
 	private final int hashCode;
@@ -132,6 +130,7 @@ public class Dataset implements Serializable
 	protected transient MobiusJob job;
 	
 	
+	protected Byte id;
 	
 	
 	protected Dataset(MobiusJob job, String name)
@@ -164,13 +163,15 @@ public class Dataset implements Serializable
 	 * 
 	 * This method is called by Mobius.
 	 */
-	public JobConf createJobConf(int jobSequenceNumber)
+	public JobConf createJobConf(byte id)
 		throws IOException
 	{
 		// preparing to create the new job, write the job conf
 		
+		this.id = id;
+		
 		if ( this.tupleConstraint!=null)
-			this.conf.set(this.getDatasetID(jobSequenceNumber)+".tuple.criteria", SerializableUtil.serializeToBase64(this.tupleConstraint));
+			this.conf.set(this.id+".tuple.criteria", SerializableUtil.serializeToBase64(this.tupleConstraint));
 		
 		StringBuffer schemaStr = new StringBuffer();
 		Iterator<String> it = this.getSchema().iterator();
@@ -180,15 +181,29 @@ public class Dataset implements Serializable
 			if( it.hasNext() )
 				schemaStr.append(",");
 		}
-		this.conf.set(this.getDatasetID(jobSequenceNumber)+".schema", schemaStr.toString());
+		this.conf.set(this.id+".schema", schemaStr.toString());
 		
 		// setup computed columns, if any
 		if( this.computedColumns!=null && this.computedColumns.size()>0 )
 		{
-			this.conf.set(this.getDatasetID(jobSequenceNumber)+".computed.columns", SerializableUtil.serializeToBase64(this.computedColumns));
+			this.conf.set(this.id+".computed.columns", SerializableUtil.serializeToBase64(this.computedColumns));
 		}
 		
+		// setup id to name mapping
+		String mapping = this.getID()+";"+this.getName();
+		
+		conf.set(ConfigureConstants.DATASET_ID_TO_NAME_MAPPING, mapping);
+		
 		return new JobConf(this.conf);
+	}
+	
+	
+	public Byte getID()
+	{
+		if( this.id==null )
+			throw new NullPointerException(this.getName()+"'s ID has not been set yet.");
+		
+		return this.id;
 	}
 	
 	
@@ -203,10 +218,10 @@ public class Dataset implements Serializable
 	 * 
 	 * This method is used by Mobius engine only.
 	 */
-	public String getDatasetID(int jobSequenceNumber)
-	{
-		return _TWO_DIGITS.format(jobSequenceNumber)+"_"+this.name;
-	}
+	//public String getDatasetID(byte id)
+	//{
+	//	return _TWO_DIGITS.format(id)+"_"+this.name;
+	//}
 	
 	
 	/**

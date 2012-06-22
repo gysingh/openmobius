@@ -1,13 +1,11 @@
 package com.ebay.erl.mobius.core.datajoin;
 
 import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.hadoop.io.DataInputBuffer;
 import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 import org.apache.hadoop.util.ReflectionUtils;
@@ -37,33 +35,28 @@ public class DataJoinKey extends Tuple {
 	// we preserve the order, because when {@link Tuple} serialize itself,
 	// it iterates column names (in natural order) one by one to serialize
 	// the values of the columns.
-	public static String KEY_FIELDNAME				= "00_MOBIUS_KEY"; 
-	public static String DATASET_ID_FIELDNAME		= "01_MOBIUS_DATASETID";	
+	public static String ACUTAL_KEY		= "00_MOBIUS_KEY"; 
+	public static String DATASET_ID		= "01_MOBIUS_DATASETID";	
 	//public static String SORT_KEYWORD_FIELDNAME		= "02_MOBIUS_SORT_KEYWORD";
 	//public static String SORT_COMPARATOR_FIELDNAME	= "03_MOBIUS_SORT_COMPARATOR";
 	
 	// to be called by Hadoop on org.apache.hadoop.mapred.JobConf.getOutputKeyComparator
 	public DataJoinKey(){}
 
-	public DataJoinKey(String datasetID, WritableComparable<?> key) 
+	public DataJoinKey(Byte datasetID, WritableComparable<?> key) 
 	{
 		set(datasetID, key, null, null);
 	}
 	
-	public DataJoinKey(Text datasetID, WritableComparable<?> key)
+	public DataJoinKey(Byte datasetID, WritableComparable<?> key, WritableComparable<?> sortKeyword, Class<?> sortComparator)
 	{
-		set(datasetID.toString(), key, null, null);
+		set(datasetID, key, sortKeyword, sortComparator);
 	}
 	
-	public DataJoinKey(Text datasetID, WritableComparable<?> key, WritableComparable<?> sortKeyword, Class<?> sortComparator)
+	public void set(Byte datasetID, WritableComparable<?> key, WritableComparable<?> sortKeyword, Class<?> sortComparator)
 	{
-		set(datasetID.toString(), key, sortKeyword, sortComparator);
-	}
-	
-	public void set(String datasetID, WritableComparable<?> key, WritableComparable<?> sortKeyword, Class<?> sortComparator)
-	{
-		this.put(KEY_FIELDNAME, key);
-		this.put(DATASET_ID_FIELDNAME, datasetID);		
+		this.put(ACUTAL_KEY, key);
+		this.put(DATASET_ID, datasetID.byteValue());		
 		//this.put(SORT_KEYWORD_FIELDNAME, sortKeyword==null?NullWritable.get():sortKeyword);
 		//this.put(SORT_COMPARATOR_FIELDNAME, sortComparator==null?Class.class.getName():sortComparator.getName());
 	}
@@ -75,18 +68,18 @@ public class DataJoinKey extends Tuple {
 		super.readFields(in);
 		
 		// ordering matters
-		this.setSchema(new String[]{KEY_FIELDNAME, DATASET_ID_FIELDNAME/*, SORT_KEYWORD_FIELDNAME, SORT_COMPARATOR_FIELDNAME*/});
+		this.setSchema(new String[]{ACUTAL_KEY, DATASET_ID/*, SORT_KEYWORD_FIELDNAME, SORT_COMPARATOR_FIELDNAME*/});
 	}
 	
 	
 	public WritableComparable getKey() 
 	{
-		return (WritableComparable<?>)this.get(KEY_FIELDNAME);
+		return (WritableComparable<?>)this.get(ACUTAL_KEY);
 	}
 
-	public String getDatasetID() 
+	public Byte getDatasetID() 
 	{
-		return this.getString(DATASET_ID_FIELDNAME);
+		return this.getByte(DATASET_ID);
 	}
 	
 	public WritableComparable getSortKeyword() 
@@ -129,11 +122,11 @@ public class DataJoinKey extends Tuple {
 	@Override
 	public int compareTo(Tuple other) 
 	{
-		WritableComparable<?> key = (WritableComparable<?>)other.get(KEY_FIELDNAME);
+		WritableComparable<?> key = (WritableComparable<?>)other.get(ACUTAL_KEY);
 		int cmp = _COLUMN_COMPARATOR.compareKey(this.getKey(), key, this.getSorter(), this.conf);
 		if(cmp!=0) return cmp;
 		
-		cmp = getDatasetID().compareTo(other.getString(DATASET_ID_FIELDNAME));
+		cmp = getDatasetID().compareTo(other.getByte(DATASET_ID));
 		if(cmp!=0) return cmp;
 		
 		return 0;

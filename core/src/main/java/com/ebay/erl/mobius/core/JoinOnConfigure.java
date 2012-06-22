@@ -147,15 +147,15 @@ public class JoinOnConfigure
 		// represent property name, $datasetID.key.columns
 		String joinKeyPropertyName = null;
 		
-		for( int jobSeqNbr=0;jobSeqNbr<this.datasets.length;jobSeqNbr++ )
+		for( byte assignedDatasetID=0;assignedDatasetID<this.datasets.length;assignedDatasetID++ )
 		{
-			Dataset aDataset = this.datasets[jobSeqNbr];
+			Dataset aDataset = this.datasets[assignedDatasetID];
 			if( aColumn.getDataset().equals(aDataset) )
 			{
 				JobSetup.validateColumns(aDataset, aColumn);				
-				Configuration aJobConf	= aDataset.createJobConf(jobSeqNbr);
+				Configuration aJobConf	= aDataset.createJobConf(assignedDatasetID);
 				this.jobConf			= Util.merge(this.jobConf, aJobConf);				
-				joinKeyPropertyName		= aDataset.getDatasetID(jobSeqNbr)+".key.columns";
+				joinKeyPropertyName		= assignedDatasetID+".key.columns";
 				break;
 			}
 		}

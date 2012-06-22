@@ -19,54 +19,65 @@ import org.apache.hadoop.io.WritableComparable;
  *
  * @param <IV>
  */
-public class DataJoinValueGroup<IV extends WritableComparable> implements Iterator<Iterator<IV>>{
-
+public class DataJoinValueGroup<IV extends WritableComparable> implements Iterator<Iterator<IV>>
+{
 	private Iterator<DataJoinValue> values;
 	private DataJoinValue nextValue = null;
-	private String nextDatasetID = null;
+	private Byte nextDatasetID = null;
 	
-	public DataJoinValueGroup(Iterator<DataJoinValue> values){
+	public DataJoinValueGroup(Iterator<DataJoinValue> values)
+	{
 		this.values = values;
-		if(this.values.hasNext()){
+		if(this.values.hasNext())
+		{
 			this.nextValue = this.values.next();
-			this.nextDatasetID = this.nextValue.getDatasetID().toString();
-		}else{
+			this.nextDatasetID = this.nextValue.getDatasetID();
+		}
+		else
+		{
 			this.nextValue = null;
 			this.nextDatasetID = null;
 		}
 	}
 
-	public String nextDatasetID(){
+	public Byte nextDatasetID()
+	{
 		return this.nextDatasetID;
 	}
 	
 	@Override
-	public boolean hasNext() {
-		if(this.nextValue != null){
+	public boolean hasNext() 
+	{
+		if(this.nextValue != null)
+		{
 			return true;
-		}else{
+		}
+		else
+		{
 			return false;
 		}
 	}
 
 	@Override
-	public Iterator<IV> next() {
-		if(!hasNext()){
+	public Iterator<IV> next() 
+	{
+		if(!hasNext())
+		{
 			throw new NoSuchElementException();
 		}
-		return new InternalIterator(nextValue.getDatasetID().toString());
+		return new InternalIterator(nextValue.getDatasetID());
 	}
 
 	@Override
 	public void remove() {
-		
+		throw new UnsupportedOperationException();
 	}
 	
 	public class InternalIterator implements Iterator<IV>{
 
-		private String datasetID;
+		private Byte datasetID;
 		
-		public InternalIterator(String datasetID){
+		public InternalIterator(Byte datasetID){
 			this.datasetID = datasetID;
 		}
 		
@@ -87,7 +98,7 @@ public class DataJoinValueGroup<IV extends WritableComparable> implements Iterat
 			IV ret = (IV)DataJoinValueGroup.this.nextValue.getValue();
 			if(DataJoinValueGroup.this.values.hasNext()){
 				DataJoinValueGroup.this.nextValue = DataJoinValueGroup.this.values.next();
-				DataJoinValueGroup.this.nextDatasetID = DataJoinValueGroup.this.nextValue.getDatasetID().toString();
+				DataJoinValueGroup.this.nextDatasetID = DataJoinValueGroup.this.nextValue.getDatasetID();
 			}else{
 				DataJoinValueGroup.this.nextValue = null;
 				DataJoinValueGroup.this.nextDatasetID = null;
@@ -97,7 +108,7 @@ public class DataJoinValueGroup<IV extends WritableComparable> implements Iterat
 
 		@Override
 		public void remove() {
-			
+			throw new UnsupportedOperationException();
 		}
 		
 	}

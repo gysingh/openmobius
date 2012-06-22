@@ -61,7 +61,7 @@ public abstract class DataJoinMapper<IK, IV, OK extends WritableComparable<?>, O
 	public abstract void joinmap(IK key, IV value, OutputCollector<OK, OV> output, Reporter reporter)
 		throws IOException;	
 
-	public abstract String getDatasetID();
+	public abstract Byte getDatasetID();
 
 	public WritableComparable<?> extractSortValueKeyword(OV value) 
 	{

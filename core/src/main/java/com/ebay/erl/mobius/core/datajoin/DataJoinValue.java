@@ -3,7 +3,6 @@ package com.ebay.erl.mobius.core.datajoin;
 import java.io.DataInput;
 import java.io.IOException;
 
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.WritableComparable;
 
 import com.ebay.erl.mobius.core.model.Tuple;
@@ -23,37 +22,32 @@ import com.ebay.erl.mobius.core.model.Tuple;
  */
 public class DataJoinValue extends Tuple{
 	
-	public static String DATASET_ID_FIELDNAME	= "00_MOBIUS_DATASETID";
-	public static String VALUE_FIELDNAME		= "01_MOBIUS_VALUE";
+	public static String DATASET_ID		= "00_MOBIUS_DATASETID";
+	public static String ACTUAL_VALUE	= "01_MOBIUS_VALUE";
 
 	// to be called by 
 	// org.apache.hadoop.io.serializer.WritableSerialization$WritableDeserializer.deserialize	
 	public DataJoinValue(){}
 	
-	public DataJoinValue(String datasetID, WritableComparable value) 
+	public DataJoinValue(Byte datasetID, WritableComparable<?> value) 
 	{
 		set(datasetID, value);
 	}
 	
-	public DataJoinValue(Text datasetID, WritableComparable value)
+	public void set(Byte datasetID, WritableComparable<?> value)
 	{
-		set(datasetID.toString(), value);
+		this.put(DATASET_ID, datasetID.byteValue());
+		this.put(ACTUAL_VALUE, value);
 	}
 	
-	public void set(String datasetID, WritableComparable value)
+	public Byte getDatasetID() 
 	{
-		this.put(DATASET_ID_FIELDNAME, datasetID);
-		this.put(VALUE_FIELDNAME, value);
-	}
-	
-	public String getDatasetID() 
-	{
-		return this.getString(DATASET_ID_FIELDNAME);
+		return this.getByte(DATASET_ID);
 	}
 
-	public WritableComparable getValue() 
+	public WritableComparable<?> getValue() 
 	{
-		return (WritableComparable)this.get(VALUE_FIELDNAME);
+		return (WritableComparable<?>)this.get(ACTUAL_VALUE);
 	}
 	
 	@Override
@@ -63,7 +57,7 @@ public class DataJoinValue extends Tuple{
 		super.readFields(in);
 		
 		// ordering matters
-		this.setSchema(new String[]{DATASET_ID_FIELDNAME, VALUE_FIELDNAME});
+		this.setSchema(new String[]{DATASET_ID, ACTUAL_VALUE});
 	}
 
 

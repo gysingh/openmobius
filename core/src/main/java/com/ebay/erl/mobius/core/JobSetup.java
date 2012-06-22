@@ -36,15 +36,17 @@ import com.ebay.erl.mobius.core.model.Tuple;
  * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
  */
 @SuppressWarnings({"deprecation", "unchecked"})
-class JobSetup 
+public class JobSetup 
 {
 	private static final Log LOGGER = LogFactory.getLog(JobSetup.class);
+	
+	
 	
 	
 	/**
 	 * specify the columns that a mapper needs to emit.
 	 */
-	public static void setupProjections(JobConf job, Dataset dataset, int jobSeqNbr, Column... projections)
+	public static void setupProjections(JobConf job, Dataset dataset, byte datasetID, Column... projections)
 	{	
 		StringBuffer sortedColumns = new StringBuffer();
 		
@@ -64,7 +66,7 @@ class JobSetup
 			if( it.hasNext() )
 				sortedColumns.append(",");
 		}
-		job.set(dataset.getDatasetID(jobSeqNbr)+".value.columns", sortedColumns.toString());
+		job.set(datasetID+".value.columns", sortedColumns.toString());
 		
 		// for Mapper only task
 		StringBuffer originalOrder = new StringBuffer();
@@ -74,7 +76,7 @@ class JobSetup
 			if( i<projections.length-1 )
 				originalOrder.append(",");
 		}
-		job.set(dataset.getDatasetID(jobSeqNbr)+".columns.in.original.order", originalOrder.toString());
+		job.set(datasetID+".columns.in.original.order", originalOrder.toString());
 	}
 	
 	
@@ -107,7 +109,7 @@ class JobSetup
 	 * and the <code>jobSequenceNbr</code> is for indicating
 	 * the job sequence.
 	 */
-	public static void setupInputs(JobConf job, Dataset aDataset, int jobSequenceNbr)
+	public static void setupInputs(JobConf job, Dataset aDataset, byte jobSequenceNbr)
 		throws IOException
 	{
 		for ( Path anInput:aDataset.getInputs() )
@@ -117,7 +119,7 @@ class JobSetup
 					anInput, 
 					aDataset.getInputFormat (), 
 					aDataset.getMapper (), 
-					aDataset.getDatasetID (jobSequenceNbr), 
+					jobSequenceNbr, 
 					FileSystem.get (job)
 			);
 		}

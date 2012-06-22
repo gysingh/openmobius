@@ -114,4 +114,8 @@ public class ConfigureConstants
 	 * job save the records to disk.
 	 */
 	public static final String PERSISTANT_CRITERIA 			= "mobius.persistant.criteria";
+	
+	
+	
+	public static final String DATASET_ID_TO_NAME_MAPPING	= "mobius.dataset.id.to.name.mapping";
 }

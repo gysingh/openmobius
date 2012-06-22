@@ -45,7 +45,7 @@ import com.ebay.erl.mobius.core.ConfigureConstants;
 public class MobiusMultiInputs 
 {	
 	public static void addInputPath(JobConf conf, Path anInput, Class<? extends InputFormat> inputFormatClass,
-			Class<? extends AbstractMobiusMapper> mapperClass, String datasetID, FileSystem fs)
+			Class<? extends AbstractMobiusMapper> mapperClass, byte datasetID, FileSystem fs)
 		throws IOException
 	{
 		MultipleInputs.addInputPath (conf, anInput, inputFormatClass, mapperClass);

@@ -38,11 +38,15 @@ public class SortProjectionConfigure
 	 */
 	private Dataset aDataset;
 	
+	// sort only operates on one dataset, so the dataset
+	// ID is always zero.
+	private static final Byte assignedDatasetID = 0;
+	
 	
 	SortProjectionConfigure(Configuration conf, Dataset aDataset)
 		throws IOException
 	{
-		Configuration aJobConf	= aDataset.createJobConf(0);
+		Configuration aJobConf	= aDataset.createJobConf(assignedDatasetID);
 		this.conf				= new JobConf(Util.merge(conf, aJobConf));
 		this.conf.set(ConfigureConstants.IS_SORT_JOB, "true");
 		this.conf.set(ConfigureConstants.MAPPER_CLASS, aDataset.getMapper().getCanonicalName());
@@ -63,11 +67,10 @@ public class SortProjectionConfigure
 		}
 		
 		JobSetup.validateColumns(aDataset, projections);
-		JobSetup.setupProjections(this.conf, aDataset, 0, projections);
-		JobSetup.setupInputs(this.conf, aDataset, 0);
+		JobSetup.setupProjections(this.conf, aDataset, assignedDatasetID, projections);
+		JobSetup.setupInputs(this.conf, aDataset, assignedDatasetID);
 		
-		String id = aDataset.getDatasetID(0);
-		this.conf.set(ConfigureConstants.ALL_DATASET_IDS, id);
+		this.conf.set(ConfigureConstants.ALL_DATASET_IDS, assignedDatasetID.toString());
 		
 		// specify the columns that reducer need to project
 		this.conf.set(ConfigureConstants.PROJECTION_COLUMNS, SerializableUtil.serializeToBase64(projections));

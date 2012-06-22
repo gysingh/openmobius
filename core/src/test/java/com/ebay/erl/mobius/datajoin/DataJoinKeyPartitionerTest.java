@@ -26,9 +26,9 @@ public class DataJoinKeyPartitionerTest {
 	public void testPartition() {
 		DataJoinKeyPartitioner partitioner = new DataJoinKeyPartitioner();
 		
-		DataJoinKey djKey1 = new DataJoinKey("1", new Text("test value"));
-		DataJoinKey djKey2 = new DataJoinKey("1", new Text("test value"));
-		DataJoinKey djKey3 = new DataJoinKey("1", new Text("other test value"));
+		DataJoinKey djKey1 = new DataJoinKey(Byte.valueOf("1"), new Text("test value"));
+		DataJoinKey djKey2 = new DataJoinKey(Byte.valueOf("1"), new Text("test value"));
+		DataJoinKey djKey3 = new DataJoinKey(Byte.valueOf("1"), new Text("other test value"));
 		
 		System.out.println(partitioner.getPartition(djKey1, null, 999));
 		System.out.println(partitioner.getPartition(djKey2, null, 999));

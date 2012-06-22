@@ -46,17 +46,17 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 {
 	protected Projectable[] _projections = null;
 	
-	private String[] _allDatasetIDs;
+	private Byte[] _allDatasetIDs;
 	
 	private JobConf conf;
 	
-	private Map<String, String[]> datasetToValueSchemaMapping = new HashMap<String, String[]>();
+	private Map<Byte, String[]> datasetToValueSchemaMapping = new HashMap<Byte, String[]>();
 	
-	private Map<String, String[]> datasetToKeySchemaMapping = new HashMap<String, String[]>();
+	private Map<Byte, String[]> datasetToKeySchemaMapping = new HashMap<Byte, String[]>();
 	
 	private Map<GroupFunction, BigTupleList> groupFunctionResults = new HashMap<GroupFunction, BigTupleList>();
 	
-	private Map<String, List<Projectable> > dsToFuncsMapping = new HashMap<String, List<Projectable>>();
+	private Map<Byte, List<Projectable> > dsToFuncsMapping = new HashMap<Byte, List<Projectable>>();
 	
 	private boolean reporterSet = false;
 	
@@ -67,7 +67,13 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 		this.conf = conf;
 		try 
 		{
-			this._allDatasetIDs = this.conf.getStrings(ConfigureConstants.ALL_DATASET_IDS, Util.ZERO_SIZE_STRING_ARRAY);
+			String[] allDSIDs = this.conf.getStrings(ConfigureConstants.ALL_DATASET_IDS, Util.ZERO_SIZE_STRING_ARRAY);
+			this._allDatasetIDs = new Byte[allDSIDs.length];
+			for( int i=0;i<allDSIDs.length;i++ )
+			{
+				this._allDatasetIDs[i] = Byte.valueOf(allDSIDs[i]);
+			}
+			
 			if( this._allDatasetIDs.length==0 )
 				throw new IllegalStateException(ConfigureConstants.ALL_DATASET_IDS+" is not set.");
 			
@@ -79,7 +85,7 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 					throw new IllegalArgumentException(p.toString()+" is not a combinable function.");
 				}
 				
-				String datasetID = this.getDatasetID(p.getParticipatedDataset().toArray(new Dataset[0])[0]);
+				Byte datasetID = p.getParticipatedDataset().toArray(new Dataset[0])[0].getID();
 				
 				List<Projectable> funcs = null;
 				if( (funcs=dsToFuncsMapping.get(datasetID))==null )
@@ -116,6 +122,8 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 		}
 		
 		
+		
+		
 		if( values.hasNext () )
 		{
 			// reset group function results.
@@ -129,7 +137,7 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 			}
 			
 			
-			String datasetID = values.nextDatasetID ();
+			Byte datasetID = values.nextDatasetID ();
 			
 			if( !key.hasSchema() )
 			{
@@ -179,12 +187,14 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 				}
 			}
 			
-			output.collect(new DataJoinKey(datasetID, key), new DataJoinValue(datasetID, combinedValue));
+			DataJoinKey outKey		= new DataJoinKey(datasetID, key);
+			DataJoinValue outValue	= new DataJoinValue(datasetID, combinedValue);
+			output.collect(outKey, outValue);
 		}
 	}
 	
 	
-	protected String[] getValueSchemaByDatasetID(String datasetID)
+	protected String[] getValueSchemaByDatasetID(Byte datasetID)
 	{
 		String[] schema = null;
 		if( (schema=this.datasetToValueSchemaMapping.get(datasetID))==null )
@@ -201,7 +211,7 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 		return schema;
 	}
 	
-	protected String[] getKeySchemaByDatasetID(String datasetID)
+	protected String[] getKeySchemaByDatasetID(Byte datasetID)
 	{
 		String[] schema = null;
 		if( (schema=this.datasetToKeySchemaMapping.get(datasetID))==null )
@@ -216,24 +226,5 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 			this.datasetToKeySchemaMapping.put(datasetID, schema);
 		}
 		return schema;
-	}
-
-	
-	private String getDatasetID(Dataset ds){		
-		// use the ds#getName() to match its ID in the
-		// <code>_allDatasetIDs</code> array.
-		String key = null;
-		for(String aDatasetID:this._allDatasetIDs)
-		{
-			String name = aDatasetID.substring(aDatasetID.indexOf("_")+1);// remove sn prefix
-			if( name.equalsIgnoreCase(ds.getName()) )
-			{
-				key = aDatasetID;
-				break;
-			}
-		}
-		if( key==null )
-			throw new IllegalArgumentException("Cannot find the ID for Dataset:"+ds);
-		return key;
-	}
+	}	
 }

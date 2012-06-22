@@ -367,28 +367,28 @@ public class Persistable
 		JobSetup.setupOutputs(this.jobConf, output, outputFormat);
 		
 		// setup input paths, projection columns for each datasets.
-		for( int jobSeq=0;jobSeq<this.datasets.length;jobSeq++)
+		for( byte assignedDatasetID=0;assignedDatasetID<this.datasets.length;assignedDatasetID++)
 		{
-			Dataset aDataset = this.datasets[jobSeq];
+			Dataset aDataset = this.datasets[assignedDatasetID];
 			
 			// setup input for each dataset
-			JobSetup.setupInputs(jobConf, aDataset, jobSeq);
+			JobSetup.setupInputs(jobConf, aDataset, assignedDatasetID);
 			
 			// setup projection for each dataset
-			JobSetup.setupProjections(jobConf, aDataset, jobSeq, datasetToColumns.get(aDataset).toArray(new Column[0]));
+			JobSetup.setupProjections(jobConf, aDataset, assignedDatasetID, datasetToColumns.get(aDataset).toArray(new Column[0]));
 		}
 		
 		// setup all dataset IDs
 		for( int i=0;i<this.datasets.length;i++)
 		{
-			String id = this.datasets[i].getDatasetID(i);
+			Byte id = this.datasets[i].getID();
 			if( !this.jobConf.get(ConfigureConstants.ALL_DATASET_IDS, "").isEmpty() )
 			{
 				this.jobConf.set(ConfigureConstants.ALL_DATASET_IDS, this.jobConf.get(ConfigureConstants.ALL_DATASET_IDS)+","+id);
 			}
 			else
 			{
-				this.jobConf.set(ConfigureConstants.ALL_DATASET_IDS, id);
+				this.jobConf.set(ConfigureConstants.ALL_DATASET_IDS, id.toString());
 			}
 		}
 		

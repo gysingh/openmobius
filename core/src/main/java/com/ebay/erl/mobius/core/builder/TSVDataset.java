@@ -92,13 +92,13 @@ public class TSVDataset extends Dataset
 	}
 	
 	@Override
-	public JobConf createJobConf(int jobSequenceNumber)
+	public JobConf createJobConf(byte jobSequenceNumber)
 		throws IOException
 	{
 		JobConf conf = super.createJobConf(jobSequenceNumber);
 		if( !this.delimiter.equals("\t") )
 		{
-			conf.set(this.getDatasetID(jobSequenceNumber)+".delimiter", SerializableUtil.serializeToBase64(delimiter));
+			conf.set(this.getID()+".delimiter", SerializableUtil.serializeToBase64(delimiter));
 		}
 		return conf;
 	}
