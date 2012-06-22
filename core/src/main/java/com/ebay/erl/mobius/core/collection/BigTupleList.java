@@ -60,7 +60,7 @@ import com.ebay.erl.mobius.util.JVMShutdownNotifier;
  * licensed under the Apache License, Version 2.0, available at 
  * http://hadoop.apache.org.
  * 
- * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ * ï¿½ 2007 ï¿½ 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
  */
 public class BigTupleList implements NotificationListener, Observer, Iterable<Tuple>, Cloneable
 {	
@@ -650,7 +650,7 @@ public class BigTupleList implements NotificationListener, Observer, Iterable<Tu
 		
 		// calling availableMemory is expensive, make sure this BigTupleList is big
 		// enough.
-		if( this.buffer_in_memory.size()>1000 && this.availableMemory()/_MB<500 )
+		if( this.buffer_in_memory.size()>50000 )
 		{				
 			// not enough memory, flush all data
 			// into disk.
@@ -672,11 +672,7 @@ public class BigTupleList implements NotificationListener, Observer, Iterable<Tu
 		LOGGER.debug("Returnning iterator");
 		
 		// number of tuples can be holded in memory.
-		long bufferSize = -1L;
-		if( this.firstTuple!=null )
-			bufferSize = ((this.availableMemory() / this.firstTuple.getEstimatedSizeInMemory())/10L)*5L; // take 50%
-		else
-			bufferSize = 100;
+		long bufferSize = 10000;
 		
 		LOGGER.debug("Number of tuples can be stored in memory when iterating:"+bufferSize);
 		
