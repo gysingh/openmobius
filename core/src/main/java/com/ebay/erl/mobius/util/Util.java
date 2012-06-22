@@ -367,4 +367,34 @@ public class Util
 			((Closeable)it).close();
 		}
 	}
+	
+	
+	public static List<String> nonRegexSplit(String source, String delimiter)
+	{
+		if( source==null )
+			throw new NullPointerException("source cannot be null.");
+		
+		if( delimiter==null )
+			throw new NullPointerException("delimiter cannot be null");
+		
+		if( delimiter.isEmpty() )
+			throw new IllegalArgumentException("delimiter cannot be empty string.");
+		
+		final int length = delimiter.length();
+		int start = 0;
+		int end = source.indexOf(delimiter, start);
+		
+		List<String> result = new ArrayList<String>();
+		while( (end=source.indexOf(delimiter, start))>=0 ){
+			result.add(source.substring(start, end) );
+			start = end+length;
+		}
+		
+		if( source.endsWith(delimiter) )// when the string ends with delimiter
+			result.add("");
+		if( start<source.length() )
+			result.add(source.substring(start));
+		
+		return result;
+	}
 }
