@@ -67,7 +67,7 @@ public class GroupByTest extends MobiusJob
 		try
 		{			
 			File input	= new File(this.getClass().getResource("/com/ebay/erl/mobius/core/items.tsv").toURI());
-			File output	= new File(System.getProperty("java.io.tmpdir"), "output");
+			File output	= new File(System.getProperty("java.io.tmpdir"), "output");			
 			
 			
 			File trueAnswer = new File(this.getClass().getResource("/com/ebay/erl/mobius/core/groupby.true.answer").toURI());
