@@ -31,6 +31,7 @@ import org.apache.hadoop.io.WritableComparable;
 
 import com.ebay.erl.mobius.core.ConfigureConstants;
 import com.ebay.erl.mobius.core.collection.CaseInsensitiveTreeMap;
+import com.ebay.erl.mobius.util.Util;
 
 /**
  * Represents a record(row) in a dataset.
@@ -2057,13 +2058,14 @@ public class Tuple
 		
 		Tuple tuple		= new Tuple();
 		
-		String[] tokens = source.toString ().split (delimiter, -1);
+		//String[] tokens = source.toString ().split (delimiter, -1);
+		List<String> tokens = Util.nonRegexSplit(source.toString(), delimiter);
 		
 		for( int i=0;i<schema.length;i++)
 		{
-			if( i<tokens.length )
+			if( i<tokens.size() )
 			{
-				tuple.put (schema[i], tokens[i]);
+				tuple.put (schema[i], tokens.get(i));
 			}
 			else
 			{
@@ -2073,10 +2075,12 @@ public class Tuple
 		
 		// there are some extra columns that exceed the length of user
 		// specified schema, put in the tail.
-		for( int i=schema.length;i<tokens.length;i++ )
+		for( int i=schema.length;i<tokens.size();i++ )
 		{
-			tuple.put ("IDX_"+i, tokens[i]);
+			tuple.put ("IDX_"+i, tokens.get(i));
 		}
+		
+		
 		
 		return tuple;
 	}
