@@ -129,7 +129,8 @@ public class Top extends GroupFunction
 	public void reset()
 	{
 		super.reset();
-		this.minHeap.clear();
+		if ( this.minHeap!=null )
+			this.minHeap.clear();
 	}
 	
 	
