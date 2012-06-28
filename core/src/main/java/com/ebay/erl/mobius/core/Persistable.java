@@ -25,6 +25,7 @@ import com.ebay.erl.mobius.core.criterion.TupleCriterion;
 import com.ebay.erl.mobius.core.datajoin.DataJoinKey;
 import com.ebay.erl.mobius.core.datajoin.DataJoinKeyPartitioner;
 import com.ebay.erl.mobius.core.datajoin.DataJoinValue;
+import com.ebay.erl.mobius.core.function.base.GroupFunction;
 import com.ebay.erl.mobius.core.function.base.Projectable;
 import com.ebay.erl.mobius.core.mapred.DefaultMobiusCombiner;
 import com.ebay.erl.mobius.core.mapred.DefaultMobiusReducer;
@@ -402,9 +403,12 @@ public class Persistable
 			{
 				isCombinable = false;
 			}
+			if( aFunc instanceof GroupFunction && aFunc.useGroupKeyOnly() )
+				isCombinable = false;
 		}
 		
 		LOGGER.info("Using Combiner? "+isCombinable);
+		//isCombinable = false;
 		if( isCombinable )
 		{	
 			jobConf.setCombinerClass(DefaultMobiusCombiner.class);
