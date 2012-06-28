@@ -402,13 +402,18 @@ public class Persistable
 			if( !aFunc.isCombinable() )
 			{
 				isCombinable = false;
+				LOGGER.info(aFunc.toString()+" is not combinable, #isCombinable() return false.");
+				break;
 			}
 			if( aFunc instanceof GroupFunction && aFunc.useGroupKeyOnly() )
+			{
+				LOGGER.info(aFunc.toString()+" is a group function and use group key as its input only, disable combiner.");
 				isCombinable = false;
+				break;
+			}
 		}
 		
 		LOGGER.info("Using Combiner? "+isCombinable);
-		//isCombinable = false;
 		if( isCombinable )
 		{	
 			jobConf.setCombinerClass(DefaultMobiusCombiner.class);
