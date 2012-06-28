@@ -9,6 +9,8 @@ import com.ebay.erl.mobius.core.collection.BigTupleList;
 import com.ebay.erl.mobius.core.function.base.GroupFunction;
 import com.ebay.erl.mobius.core.model.Column;
 import com.ebay.erl.mobius.core.model.Tuple;
+import com.ebay.erl.mobius.core.model.TupleColumnComparator;
+import com.ebay.erl.mobius.core.sort.Sorter;
 import com.ebay.erl.mobius.util.Util;
 
 
@@ -48,6 +50,8 @@ public class Top extends GroupFunction
 	
 	private transient PriorityQueue<Tuple> minHeap;
 	
+	private Sorter[] sorters;
+	
 	
 	/**
 	 * Create a {@link Top} operation that emit up to
@@ -79,6 +83,59 @@ public class Top extends GroupFunction
 		super(getColumns(ds, inputColumns));
 		this.comparatorClassName = comparator.getCanonicalName();
 		this.topX = topX;
+	}
+	
+	/**
+	 * Create a {@link Top} operation that emit up to
+	 * <code>topX</code> rows from the given dataset 
+	 * <code>ds</code>.
+	 * <p>
+	 * 
+	 * The ordering is defined by the specified <code>sorters</code>,
+	 * note that, the <code>sorters</code> can only access columns in
+	 * <code>inputColumns</code>.
+	 * <p>
+	 * 
+	 * For example, pick top 5 from a list of tuples (they all have just 
+	 * one column, called counts, for simplicity), and the values of tuples 
+	 * are [2, 7, 1, 4, 6, 7, 2, 1, 11], then if the sorter is 
+	 * <code>new Sorter("counts", Ordering.ASC, true)</code>, the top 5  is
+	 * {11, 7, 7, 6, 4}, if sorter is <code>new Sorter("counts", Ordering.DESC, true)</code>,
+	 * then top 5 is {1, 2, 2, 2, 4}.
+	 */
+	public Top(Dataset ds, String[] inputColumns, Sorter[] sorters, int topX)
+	{
+		super(getColumns(ds, inputColumns));
+		
+		if( sorters==null || sorters.length==0 )
+		{
+			throw new IllegalArgumentException("sorters cannot null nor empty.");
+		}
+		
+		// make sure the "sorters" only use the columns in the
+		// <code>inputColumns</code>
+		//
+		for(Sorter aSorter:sorters )
+		{
+			boolean withinSchema = false;
+			for( String aColumn: inputColumns)
+			{
+				if( aSorter.getColumn().equalsIgnoreCase(aColumn) )
+				{
+					withinSchema = true;
+					break;
+				}
+			}
+			
+			if( !withinSchema )
+			{
+				throw new IllegalArgumentException("A sorter uses column["+aSorter.getColumn()+"] " +
+						"that is not in the input columns:"+Arrays.toString(inputColumns));
+			}
+		}
+		
+		this.topX = topX;
+		this.sorters = sorters;
 	}
 
 	/**
@@ -153,8 +210,30 @@ public class Top extends GroupFunction
 				throw new RuntimeException("Cannot create instance of comparator:"+this.comparatorClassName, e);
 			}
 		}
-		else if ( this.comparator==null && comparatorClassName==null ){
-			this.comparator = new Tuple();
+		else if ( this.comparator==null && comparatorClassName==null )
+		{
+			if( this.sorters==null)
+			{
+				// user doesn't specified sorters nor customized comparator,
+				// use the default comparator (Tuple).
+				this.comparator = new Tuple();
+			}
+			else
+			{
+				// user has specified sorters, create a comparator that
+				// use sorters to compare.
+				this.comparator = new Comparator<Tuple>(){
+				
+					TupleColumnComparator comparator = new TupleColumnComparator();
+					
+					@Override
+					public int compare(Tuple t1, Tuple t2) 
+					{
+						int result = comparator.compareKey(t1, t2, sorters, getConf());
+						return result;
+					}
+				};
+			}
 		}
 		return this.comparator;
 	}
