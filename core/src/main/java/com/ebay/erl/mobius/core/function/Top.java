@@ -94,14 +94,7 @@ public class Top extends GroupFunction
 		{
 			this.minHeap = new PriorityQueue<Tuple>(this.topX, this.getComparator());
 		}
-		Tuple t = new Tuple();
-		for( int i=0;i<this.getOutputSchema().length;i++ )		
-		{
-			String inName	= this.inputs[i].getInputColumnName();
-			String outName	= this.getOutputSchema()[i];
-			
-			t.insert(outName, tuple.get(inName));
-		}
+		
 		this.minHeap.add(tuple);
 		
 		while ( this.minHeap.size()>topX )
@@ -114,13 +107,23 @@ public class Top extends GroupFunction
 	@Override
 	public BigTupleList getResult()
 	{
-		BigTupleList result = new BigTupleList(this.getComparator(), this.reporter);
+		BigTupleList result = new BigTupleList(this.reporter);
 		
 		Tuple[] tuples = this.minHeap.toArray(new Tuple[this.minHeap.size()]);
 		Arrays.sort(tuples, this.getComparator());
 		
-		for( int i=tuples.length-1;i>=0;i-- ){
-			result.add(tuples[i]);
+		for( int i=tuples.length-1;i>=0;i-- )
+		{
+			Tuple currentTuple = tuples[i];
+			Tuple t = new Tuple();
+			for( int j=0;j<this.getOutputSchema().length;j++ )		
+			{
+				String inName	= this.inputs[j].getInputColumnName();
+				String outName	= this.getOutputSchema()[j];
+				
+				t.insert(outName, currentTuple.get(inName));
+			}
+			result.add(t);
 		}
 		return result;
 	}
