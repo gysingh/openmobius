@@ -24,10 +24,18 @@ import com.ebay.erl.mobius.util.Util;
  * {@link #Top(Dataset, String[], int, Class)}.
  * <p>
  * 
- * The output result is sorted in the reversed order of the
- * provided comparator.
- * 
+ * Top X is defined as: tuples are sorted by natural ordering, customized
+ * comparator ({@link #Top(Dataset, String[], int, Class)}), or
+ * user provided sorters ( {@link #Top(Dataset, String[], Sorter[], int)}).
+ * When tuples are sorted, it pick the first X elements in the sorted
+ * result.<br>
+ * For example, a tuple list with one single column and their values are
+ * [2, 7, -1, 3, 10, 2, 4], then if people chose to use natural ordering,
+ * and want top 3 element, and the top 3 elements would be {-1, 2, 2}.  If
+ * user chose to use <code>Sorter(Ordering.DESC)</code>, then top 3 are
+ * {4, 7, 10}.
  * <p>
+ * 
  * This product is licensed under the Apache License,  Version 2.0, 
  * available at http://www.apache.org/licenses/LICENSE-2.0.
  * 
@@ -48,7 +56,7 @@ public class Top extends GroupFunction
 	
 	private String comparatorClassName;
 	
-	private transient PriorityQueue<Tuple> minHeap;
+	private transient PriorityQueue<Tuple> maxHeap;
 	
 	private Sorter[] sorters;
 	
@@ -94,14 +102,6 @@ public class Top extends GroupFunction
 	 * The ordering is defined by the specified <code>sorters</code>,
 	 * note that, the <code>sorters</code> can only access columns in
 	 * <code>inputColumns</code>.
-	 * <p>
-	 * 
-	 * For example, pick top 5 from a list of tuples (they all have just 
-	 * one column, called counts, for simplicity), and the values of tuples 
-	 * are [2, 7, 1, 4, 6, 7, 2, 1, 11], then if the sorter is 
-	 * <code>new Sorter("counts", Ordering.ASC, true)</code>, the top 5  is
-	 * {11, 7, 7, 6, 4}, if sorter is <code>new Sorter("counts", Ordering.DESC, true)</code>,
-	 * then top 5 is {1, 2, 2, 2, 4}.
 	 */
 	public Top(Dataset ds, String[] inputColumns, Sorter[] sorters, int topX)
 	{
@@ -114,7 +114,6 @@ public class Top extends GroupFunction
 		
 		// make sure the "sorters" only use the columns in the
 		// <code>inputColumns</code>
-		//
 		for(Sorter aSorter:sorters )
 		{
 			boolean withinSchema = false;
@@ -147,16 +146,16 @@ public class Top extends GroupFunction
 	@Override
 	public void consume(Tuple tuple) 
 	{	
-		if( this.minHeap==null )
+		if( this.maxHeap==null )
 		{
-			this.minHeap = new PriorityQueue<Tuple>(this.topX, this.getComparator());
+			this.maxHeap = new PriorityQueue<Tuple>(this.topX, this.getComparator());
 		}
 		
-		this.minHeap.add(tuple);
+		this.maxHeap.add(tuple);
 		
-		while ( this.minHeap.size()>topX )
+		while ( this.maxHeap.size()>topX )
 		{
-			this.minHeap.poll();// remove the smallest
+			this.maxHeap.poll();// remove the smallest
 		}
 	}
 	
@@ -166,7 +165,7 @@ public class Top extends GroupFunction
 	{
 		BigTupleList result = new BigTupleList(this.reporter);
 		
-		Tuple[] tuples = this.minHeap.toArray(new Tuple[this.minHeap.size()]);
+		Tuple[] tuples = this.maxHeap.toArray(new Tuple[this.maxHeap.size()]);
 		Arrays.sort(tuples, this.getComparator());
 		
 		for( int i=tuples.length-1;i>=0;i-- )
@@ -189,8 +188,8 @@ public class Top extends GroupFunction
 	public void reset()
 	{
 		super.reset();
-		if ( this.minHeap!=null )
-			this.minHeap.clear();
+		if ( this.maxHeap!=null )
+			this.maxHeap.clear();
 	}
 	
 	
@@ -200,11 +199,16 @@ public class Top extends GroupFunction
 	@SuppressWarnings("unchecked")
 	private Comparator<Tuple> getComparator()
 	{
+		if( this.comparator!=null )
+			return this.comparator;
+		
+		Comparator<Tuple> comp = null;
+		
 		if(this.comparator==null && comparatorClassName!=null)
 		{
 			try
 			{
-				this.comparator = (Comparator<Tuple>)Util.getClass(this.comparatorClassName).newInstance();				
+				comp = (Comparator<Tuple>)Util.getClass(this.comparatorClassName).newInstance();				
 			}catch(Throwable e)
 			{
 				throw new RuntimeException("Cannot create instance of comparator:"+this.comparatorClassName, e);
@@ -216,13 +220,13 @@ public class Top extends GroupFunction
 			{
 				// user doesn't specified sorters nor customized comparator,
 				// use the default comparator (Tuple).
-				this.comparator = new Tuple();
+				comp = new Tuple();
 			}
 			else
 			{
 				// user has specified sorters, create a comparator that
 				// use sorters to compare.
-				this.comparator = new Comparator<Tuple>(){
+				comp = new Comparator<Tuple>(){
 				
 					TupleColumnComparator comparator = new TupleColumnComparator();
 					
@@ -235,6 +239,18 @@ public class Top extends GroupFunction
 				};
 			}
 		}
+		
+		final Comparator<Tuple> finalComp = comp;
+		
+		this.comparator = new Comparator(){
+			@Override
+			public int compare(Object o1, Object o2) 
+			{
+				// reverse order as use max heap to get top x
+				return - finalComp.compare((Tuple)o1, (Tuple)o2);
+			}
+		};
+		
 		return this.comparator;
 	}
 	

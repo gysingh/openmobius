@@ -18,7 +18,9 @@ import com.ebay.erl.mobius.core.sort.Sorter;
 import com.ebay.erl.mobius.core.sort.Sorter.Ordering;
 import com.ebay.erl.mobius.util.SerializableUtil;
 
-public class TopTest extends MobiusJob{
+public class TopTest extends MobiusJob
+{	
+	private static final long serialVersionUID = -4217555025229349720L;
 
 	@Test
 	public void testSorters()
@@ -67,8 +69,7 @@ public class TopTest extends MobiusJob{
 		int k = 0;
 		for( Tuple t: topFunction.getResult() )
 		{
-			k++;
-			assertEquals(counts[500-k], t.getInt("TOP_COUNTS"));
+			assertEquals(counts[k++], t.getInt("TOP_COUNTS"));
 		}
 		
 		
@@ -94,8 +95,7 @@ public class TopTest extends MobiusJob{
 		k = 0;
 		for( Tuple t: topFunction.getResult() )
 		{
-			k++;
-			assertEquals(counts[500-k], t.getInt("TOP_COUNTS"));
+			assertEquals(counts[k++], t.getInt("TOP_COUNTS"));
 		}
 	}
 
