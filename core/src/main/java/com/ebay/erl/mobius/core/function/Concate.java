@@ -74,7 +74,11 @@ public class Concate extends SingleInputAggregateFunction
 		{
 			// result coming from Combiner
 			ResultWrapper wrapper = (ResultWrapper)value;
-			array.add(wrapper.getCombinedResult());
+			Array wrapped = (Array)wrapper.getCombinedResult();
+			for( Object elem:wrapped )
+			{
+				array.add(elem);
+			}
 		}
 		else
 		{
