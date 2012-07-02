@@ -148,9 +148,14 @@ public class DefaultMobiusCombiner extends DataJoinReducer<Tuple, Tuple, DataJoi
 			
 			Tuple combinedValue = new Tuple();
 			
+			long progress = 0L;
 			while( tuples.hasNext() )
 			{
 				Tuple aTuple = tuples.next();
+				if( ++progress % 3000 ==0 )
+				{
+					reporter.progress();
+				}				
 				aTuple.setSchema(this.getValueSchemaByDatasetID(datasetID));
 				
 				for( Projectable p:this.dsToFuncsMapping.get(datasetID) )
