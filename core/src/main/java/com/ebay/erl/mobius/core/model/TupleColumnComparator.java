@@ -143,6 +143,15 @@ public class TupleColumnComparator
 			cmp.setType(equal_type, equal_type);
 			TupleTypeHandler<Integer> equalTypeComparator = new TupleTypeHandler<Integer>(){
 					
+				@Override 
+				protected Integer on_array() throws IOException
+				{
+					Array a1 = (Array)v1;
+					Array a2 = (Array)v2;
+					
+					return a1.compareTo(a2);
+				}
+				
 				@Override
 				protected Integer on_boolean() throws IOException {
 					return compare( (Boolean)v1, (Boolean)v2);

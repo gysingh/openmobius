@@ -68,6 +68,8 @@ public abstract class TupleTypeHandler <RETURN>
 				return on_null_writable();
 			case Tuple.TUPLE_TYPE:
 				return on_tuple();
+			case Tuple.ARRAY_TYPE:
+				return on_array();
 			default:
 				return on_default();
 		}
@@ -112,4 +114,6 @@ public abstract class TupleTypeHandler <RETURN>
 	protected abstract RETURN on_null_writable() throws IOException;
 	
 	protected abstract RETURN on_result_wrapper() throws IOException;
+	
+	protected abstract RETURN on_array() throws IOException;
 }
