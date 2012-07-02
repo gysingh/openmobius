@@ -138,7 +138,7 @@ public class ReadFieldImpl extends TupleTypeHandler<Void>
 	protected Void on_short()
 		throws IOException
 	{
-		this.values.add(in.readByte());
+		this.values.add(in.readShort());
 		return null;
 	}
 
@@ -216,6 +216,14 @@ public class ReadFieldImpl extends TupleTypeHandler<Void>
 		ResultWrapper<?> wrapper = new ResultWrapper();
 		wrapper.readFields(in);
 		this.values.add(wrapper);
+		return null;
+	}
+
+	@Override
+	protected Void on_array() throws IOException {
+		Array array = new Array();
+		array.readFields(in);
+		this.values.add(array);
 		return null;
 	}
 
