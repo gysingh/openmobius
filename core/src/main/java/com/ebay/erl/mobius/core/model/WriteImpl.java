@@ -183,4 +183,11 @@ public class WriteImpl extends TupleTypeHandler<Void>
 		wrapper.write(out);
 		return null;
 	}
+	
+	@Override
+	protected Void on_array() throws IOException {
+		Array array = (Array)value;
+		array.write(out);
+		return null;
+	}
 }
