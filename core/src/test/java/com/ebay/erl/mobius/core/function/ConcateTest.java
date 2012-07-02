@@ -54,6 +54,7 @@ public class ConcateTest extends MobiusTestJob
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	public void test2()
 		throws IOException
