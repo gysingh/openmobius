@@ -58,6 +58,15 @@ public class Concate extends SingleInputAggregateFunction
 		
 		this.delimiter = delimiter;
 	}
+	
+	public Concate setDelimiter(String delimiter)
+	{
+		if( delimiter==null || delimiter.length()==0 )
+			throw new IllegalArgumentException("Delimiter cannot be null nor empty.");
+		
+		this.delimiter = delimiter;
+		return this;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
