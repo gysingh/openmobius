@@ -37,6 +37,8 @@ public class Sum extends SingleInputAggregateFunction
 		
 	private static final long serialVersionUID = 8043394371071057906L;
 	
+	private double tempSum = 0D;
+	
 	
 	/**
 	 * Create an instance of {@link Max} operation to
@@ -81,13 +83,34 @@ public class Sum extends SingleInputAggregateFunction
 		}
 	}
 	
+	@Override
+	public Tuple getComputedResult()
+	{
+		if( this.aggregateResult==null )
+		{
+			this.aggregateResult = new BigDecimal(0D);
+		}
+		this.aggregateResult = ((BigDecimal)this.aggregateResult).add(BigDecimal.valueOf(this.tempSum));
+		return super.getComputedResult();
+	}
+	
 	private void add(double value)
 	{
 		if( this.aggregateResult==null )
 		{
 			this.aggregateResult = new BigDecimal(0D);
 		}
-		this.aggregateResult = ((BigDecimal)this.aggregateResult).add(BigDecimal.valueOf(value));
+		
+		if( Double.isInfinite(this.tempSum+value) || (this.tempSum+value<0 && value>=0 && this.tempSum>=0) )
+		{
+			// overflow
+			this.aggregateResult = ((BigDecimal)this.aggregateResult).add(BigDecimal.valueOf(this.tempSum));
+			this.tempSum = value;
+		}
+		else
+		{
+			this.tempSum += value;
+		}		
 	}
 	
 	@Override
@@ -95,6 +118,7 @@ public class Sum extends SingleInputAggregateFunction
 	{
 		super.reset();
 		this.aggregateResult = new BigDecimal(0D);
+		this.tempSum = 0D;
 	}
 	
 	@Override
