@@ -1034,6 +1034,9 @@ public class Tuple
 	
 	public Tuple put(String name, ResultWrapper<?> v)
 	{
+		if( v==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		this.insert(name, v);
 		return this;
 	}
@@ -1221,6 +1224,9 @@ public class Tuple
 	 */
 	public Tuple put(String name, java.sql.Date value)
 	{
+		if( value==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		this.insert(name, value);
 		
 		// add 24 bytes, 24 bytes is derived from 
@@ -1240,6 +1246,9 @@ public class Tuple
 	 */
 	public Tuple put(String name, Timestamp value)
 	{
+		if( value==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		this.insert(name, value);
 		
 		// add 32 bytes, 32 bytes is derived from 
@@ -1259,6 +1268,9 @@ public class Tuple
 	 */
 	public Tuple put(String name, Time value)
 	{
+		if( value==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		this.insert(name, value);
 		
 		// add 24 bytes, 24 bytes is derived from 
@@ -1278,6 +1290,9 @@ public class Tuple
 	 */
 	public Tuple put(String name, String value)
 	{
+		if( value==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		this.insert(name, value);
 		
 		// reference: http://www.javamex.com/tutorials/memory/string_memory_usage.shtml
@@ -1316,6 +1331,9 @@ public class Tuple
 	 */
 	public Tuple put(String name, Writable value)
 	{
+		if( value==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		this.insert(name, value);
 		
 		// estimate only, put 512 byte here
@@ -1336,6 +1354,9 @@ public class Tuple
 	 */
 	public Tuple put(String name, Serializable value)
 	{
+		if( value==null )
+			throw new NullPointerException("value cannot be null.");
+		
 		if( value instanceof Map<?, ?> && !(value instanceof CaseInsensitiveTreeMap) )
 		{
 			throw new IllegalArgumentException("The supported map type is only "+CaseInsensitiveTreeMap.class.getCanonicalName());
