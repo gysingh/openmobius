@@ -31,7 +31,7 @@ import com.ebay.erl.mobius.core.model.Column;
 public class GroupByTest extends MobiusJob
 {
 	private static final long serialVersionUID = -5877391996762185731L;
-	
+	//test test
 	private Log LOGGER = LogFactory.getLog(GroupByTest.class);
 	
 	@Override
