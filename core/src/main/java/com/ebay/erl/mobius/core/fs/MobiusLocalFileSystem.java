@@ -19,7 +19,7 @@ import org.apache.hadoop.fs.permission.FsPermission;
  * licensed under the Apache License, Version 2.0, available at 
  * http://hadoop.apache.org.
  * 
- * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Neel Sundaresan
+ * © 2007 – 2012 eBay Inc., Evan Chiu, Woody Zhou, Jack Shen, Gyanit Singh, Neel Sundaresan
  *
  */
 public class MobiusLocalFileSystem extends LocalFileSystem
